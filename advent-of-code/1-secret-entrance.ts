@@ -36,22 +36,26 @@ const getPassword = (
 	initialDialPosition: number,
 ) => {
 	let dialPosition = initialDialPosition;
-	let finalPass = 0;
+	let clickCount = 0;
 
 	for (const instruction of instructions) {
 		const { direction, amount } = instruction;
 
-		dialPosition =
-			direction === "L" ? dialPosition - amount : dialPosition + amount;
+		for (let i = 0; i < amount; i++) {
+			if (direction === "L") {
+				dialPosition--;
+			} else {
+				dialPosition++;
+			}
+			dialPosition = (dialPosition + 100) % 100;
 
-		dialPosition = (dialPosition + 100) % 100;
-
-		if (dialPosition === 0) {
-			finalPass++;
+			if (dialPosition === 0) {
+				clickCount++;
+			}
 		}
 	}
 
-	return Effect.succeed(finalPass);
+	return Effect.succeed(clickCount);
 };
 
 pipe(
