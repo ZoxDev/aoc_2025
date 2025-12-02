@@ -30,16 +30,16 @@ const findInvalidIds = (ranges: { from: number; to: number }[]) => {
 			const currentIdAsString = currentId.toString();
 			const currentIdLenght = currentIdAsString.length;
 
-			const firstHalf = currentIdAsString.slice(0, currentIdLenght / 2);
-			const secondHalf = currentIdAsString.slice(
-				currentIdLenght / 2,
-				currentIdLenght,
-			);
+			for (let chunk = 1; chunk < currentIdLenght; chunk++) {
+				const sequence = currentIdAsString.slice(0, chunk);
 
-			if (firstHalf === secondHalf) ids.push(currentId);
+				if (sequence.repeat(currentIdLenght / chunk) === currentIdAsString) {
+					ids.push(currentId);
+				}
+			}
 		}
 
-		return ids;
+		return [...new Set(ids)];
 	});
 
 	return Effect.succeed(invalidIds);
