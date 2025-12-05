@@ -21,25 +21,37 @@ const getRollsGrid = (input: string) => {
 
 const computeReachableRolls = (rollsGrid: RollsMapType) => {
 	let reachableAmount = 0;
-	rollsGrid.forEach((isRoll, key) => {
-		if (!isRoll) return;
+	let lastReachableAmount = -1;
 
-		let adjacentRolls = 0;
-		const [rollColStr, rollRowStr] = key.split(",");
-		const rollCol = Number(rollColStr);
-		const rollRow = Number(rollRowStr);
-		for (let dy = -1; dy <= 1; dy++) {
-			for (let dx = -1; dx <= 1; dx++) {
-				if (dx === 0 && dy === 0) continue;
+	while (lastReachableAmount !== reachableAmount) {
+		lastReachableAmount = reachableAmount;
 
-				const adjacentIsRoll = rollsGrid.get(`${rollCol + dx},${rollRow + dy}`);
+		rollsGrid.forEach((isRoll, key) => {
+			if (!isRoll) return;
 
-				if (adjacentIsRoll) adjacentRolls++;
+			let adjacentRolls = 0;
+			const [rollColStr, rollRowStr] = key.split(",");
+			const rollCol = Number(rollColStr);
+			const rollRow = Number(rollRowStr);
+
+			for (let dy = -1; dy <= 1; dy++) {
+				for (let dx = -1; dx <= 1; dx++) {
+					if (dx === 0 && dy === 0) continue;
+
+					const adjacentIsRoll = rollsGrid.get(
+						`${rollCol + dx},${rollRow + dy}`,
+					);
+
+					if (adjacentIsRoll) adjacentRolls++;
+				}
 			}
-		}
 
-		if (adjacentRolls < 4) reachableAmount++;
-	});
+			if (adjacentRolls < 4) {
+				reachableAmount++;
+				rollsGrid.delete(key);
+			}
+		});
+	}
 
 	return Effect.succeed(reachableAmount);
 };
